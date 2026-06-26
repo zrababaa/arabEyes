@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Arab Eyes Center for Ophthalmology
+# Replace YOURDOMAIN.com with your actual domain once live
+# Sitemap: https://YOURDOMAIN.com/sitemap.xml
