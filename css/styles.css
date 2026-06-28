@@ -1314,8 +1314,7 @@ html[dir="ltr"]  .testimonial-card::before { left:  1rem; }
 .testimonial-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .t-stars { color: var(--gold); font-size: .9rem; letter-spacing: .15em; }
 .t-quote {
-  flex: 1; border: 1.5px dashed rgba(212,164,60,.25); border-radius: var(--radius-sm);
-  padding: .85rem; text-align: center; color: #bbb; font-size: .8rem; line-height: 1.75;
+  flex: 1; line-height: 1.85; font-size: .88rem; color: #555; font-style: italic;
 }
 .t-reviewer {
   display: flex; align-items: center; gap: .75rem;
