@@ -1151,24 +1151,32 @@ html[dir="ltr"]  .floating-wrap { right: 1.5rem; }
 }
 
 @media (max-width: 768px) {
-  /* Mobile nav */
+  /* Mobile nav — proper dropdown (no fixed, no offset bug) */
   .nav-links {
-    position: fixed;
-    top: 72px; left: 0; right: 0;
-    background: rgba(254,248,241,.98);
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: var(--white);
+    border-top: 2px solid var(--gold);
     border-bottom: 1px solid var(--beige);
-    padding: .75rem 1rem 1rem;
+    padding: .5rem .75rem .75rem;
     flex-direction: column;
     align-items: stretch;
-    gap: .2rem;
-    transform: translateY(-110%);
-    transition: transform .3s ease;
-    z-index: 998;
-    box-shadow: var(--shadow-md);
-    backdrop-filter: blur(12px);
+    gap: .1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .22s ease, transform .22s ease, visibility .22s;
+    z-index: 999;
+    box-shadow: 0 10px 28px rgba(28,28,20,.13);
+    max-height: calc(100vh - 62px);
+    overflow-y: auto;
   }
-  .nav-links.open { transform: translateY(0); }
-  .nav-links a { padding: .7rem 1rem; font-size: .92rem; }
+  .nav-links.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .nav-links a { padding: .75rem 1rem; font-size: .93rem; }
   .nav-book-btn  { display: none; }
   .menu-toggle   { display: flex; }
 
@@ -1442,8 +1450,7 @@ html[dir="ltr"]  .testimonial-card::before { left:  1rem; }
 .navbar.scrolled .logo-en { font-size: .52rem; }
 
 @media (max-width: 768px) {
-  .nav-links { transition: transform .3s ease, top .3s ease; }
-  .navbar.scrolled .nav-links { top: 54px; }
+  /* no top override needed — nav-links now use position: absolute; top: 100% */
 }
 
 /* ================================================
@@ -1954,31 +1961,44 @@ html[dir="ltr"] .hero-float-spec { right: 12%; }
   .menu-toggle  { display: flex; }
 
   .nav-links {
-    position: fixed;
-    top: 62px; left: 0; right: 0;
-    background: rgba(254,248,241,.98);
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: var(--white);
+    border-top: 2px solid var(--gold);
     border-bottom: 1px solid var(--beige);
-    padding: .6rem 1rem 1rem;
+    padding: .5rem .75rem .75rem;
     flex-direction: column;
     align-items: stretch;
-    gap: .15rem;
-    transform: translateY(-110%);
-    transition: transform .3s ease;
-    z-index: 998;
-    box-shadow: var(--shadow-md);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    gap: .1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .22s ease, transform .22s ease, visibility .22s;
+    z-index: 999;
+    box-shadow: 0 10px 28px rgba(28,28,20,.13);
     max-height: calc(100vh - 62px);
     overflow-y: auto;
   }
-  .nav-links.open { transform: translateY(0); }
+  .nav-links.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
   .nav-links a {
-    padding: .8rem 1rem;
-    font-size: .95rem;
+    padding: .78rem 1rem;
+    font-size: .93rem;
     border-radius: var(--radius-sm);
-    border-bottom: 1px solid rgba(238,223,212,.5);
+    border-bottom: 1px solid rgba(238,223,212,.45);
+    color: var(--charcoal);
+    font-weight: 600;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--teal);
+    background: rgba(18,83,82,.07);
   }
   .nav-links li:last-child a { border-bottom: none; }
+  /* hide desktop underline pseudo-element inside mobile dropdown */
+  .nav-links a::after { display: none; }
 
   /* ---- Hero ---- */
   .hero {
@@ -2196,9 +2216,14 @@ html[dir="ltr"] .hero-float-spec { right: 12%; }
   /* CTA buttons */
   .cta-buttons .btn { padding: .85rem 1rem; font-size: .84rem; }
 
-  /* Floating WA */
+  /* Floating WA — smaller button, no pulsing rings on mobile */
   html[dir="rtl"] .floating-wrap { left: 1rem; }
   html[dir="ltr"]  .floating-wrap { right: 1rem; }
+  .float-wa { width: 44px; height: 44px; font-size: 1.2rem; box-shadow: 0 4px 14px rgba(37,211,102,.4); }
+  .float-wa::before, .float-wa::after { display: none; }
+  .wa-bubble { width: 185px; font-size: .8rem; }
+  .wa-bubble-msg { font-size: .78rem; }
+  .floating-wrap { gap: .4rem; bottom: 1.25rem; }
 
   /* Sticky CTA bar: slightly taller tap targets */
   .sticky-cta-bar a { padding: .72rem .4rem; font-size: .78rem; }
