@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -128,49 +128,56 @@
       </div>
     </div>
 
-    <!-- Desktop visual card -->
-    <div class="hero-card" aria-hidden="true">
-      <div class="hero-card-header">
-        <span class="big-icon">👁️</span>
-        <div class="lang-ar"><h3>مركز متكامل لرعاية العيون</h3></div>
-        <div class="lang-en"><h3>Complete Eye Care Center</h3></div>
+    <!-- Desktop visual — premium photo card -->
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-photo">
+        <img src="images/center.jpg" alt="" loading="eager" fetchpriority="high" />
+        <span class="hero-photo-glow"></span>
       </div>
-      <div class="hero-card-body">
-        <div class="stat-row">
-          <div class="stat-box">
-            <span class="stat-num">9+</span>
-            <div class="lang-ar"><span class="stat-lbl">تخصصات طبية</span></div>
-            <div class="lang-en"><span class="stat-lbl">Specialties</span></div>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num">2026</span>
-            <div class="lang-ar"><span class="stat-lbl">أحدث جهاز في الأردن</span></div>
-            <div class="lang-en"><span class="stat-lbl">Latest device in Jordan</span></div>
-          </div>
+
+      <!-- Floating glass badge: rating -->
+      <div class="hero-float hero-float-rating">
+        <span class="hf-stars">★★★★★</span>
+        <div class="hf-text">
+          <strong>5.0</strong>
+          <span class="lang-ar">تقييم المرضى</span>
+          <span class="lang-en">Patient rating</span>
         </div>
-        <div class="hero-list">
-          <div class="lang-ar">
-            ✅ فحوصات نظر شاملة<br>
-            ✅ عمليات تصحيح النظر<br>
-            ✅ زراعة القرنية والعدسات<br>
-            ✅ علاج أمراض الشبكية<br>
-            ✅ طب عيون الأطفال والحول
-          </div>
-          <div class="lang-en">
-            ✅ Comprehensive eye exams<br>
-            ✅ Vision correction surgery<br>
-            ✅ Cornea &amp; lens implants<br>
-            ✅ Retinal disease treatment<br>
-            ✅ Pediatric &amp; strabismus care
-          </div>
+      </div>
+
+      <!-- Floating glass badge: device -->
+      <div class="hero-float hero-float-device">
+        <span class="hf-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 24C8 15 15 10 24 10C33 10 40 15 44 24C40 33 33 38 24 38C15 38 8 33 4 24Z" stroke="currentColor" stroke-width="2.4" fill="none"/>
+            <circle cx="24" cy="24" r="5.5" stroke="currentColor" stroke-width="2.2" fill="none"/>
+            <circle cx="24" cy="24" r="2" fill="currentColor"/>
+          </svg>
+        </span>
+        <div class="hf-text">
+          <strong>2026</strong>
+          <span class="lang-ar">أحدث جهاز ليزر في الأردن</span>
+          <span class="lang-en">Newest laser in Jordan</span>
         </div>
+      </div>
+
+      <!-- Floating glass badge: specialties -->
+      <div class="hero-float hero-float-spec">
+        <strong>9+</strong>
+        <span class="lang-ar">تخصصات طبية</span>
+        <span class="lang-en">Specialties</span>
       </div>
     </div>
   </div>
+
+  <!-- Scroll cue -->
+  <a href="#trust-strip" class="hero-scroll-cue" aria-label="Scroll down">
+    <span class="hsc-mouse"><span class="hsc-wheel"></span></span>
+  </a>
 </section>
 
 <!-- ══════════════ TRUST STRIP ══════════════ -->
-<div class="trust-strip" aria-label="Key highlights">
+<div class="trust-strip" id="trust-strip" aria-label="Key highlights">
   <div class="trust-inner">
     <div class="trust-item">
       <span class="ti">🏥</span>
@@ -339,37 +346,69 @@
     <div class="services-grid">
 
       <div class="service-card">
-        <div class="service-icon">👁️</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 16C5 9.5 10 6 16 6C22 6 27 9.5 30 16C27 22.5 22 26 16 26C10 26 5 22.5 2 16Z"/>
+            <circle cx="16" cy="16" r="4.5"/>
+          </svg>
+        </div>
         <h3><span class="lang-ar">فحص نظر شامل</span><span class="lang-en">Comprehensive Eye Examination</span></h3>
         <p><span class="lang-ar">فحص دقيق وشامل لحدة البصر والصحة العامة للعين، مع توصيات طبية مخصصة.</span><span class="lang-en">Detailed and comprehensive assessment of visual acuity and overall eye health, with personalized medical recommendations.</span></p>
       </div>
 
       <div class="service-card">
-        <div class="service-icon">✨</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 4V8M16 24V28M4 16H8M24 16H28M7.5 7.5L10 10M22 22L24.5 24.5M24.5 7.5L22 10M10 22L7.5 24.5"/>
+            <circle cx="16" cy="16" r="5"/>
+          </svg>
+        </div>
         <h3><span class="lang-ar">تصحيح النظر — أحدث جهاز في الأردن 2026</span><span class="lang-en">Vision Correction — Latest Device in Jordan 2026</span></h3>
         <p><span class="lang-ar">عمليات تصحيح النظر بأحدث وأدق التقنيات الليزرية المتوفرة في الأردن عام 2026.</span><span class="lang-en">Vision correction procedures using the most advanced laser technology available in Jordan in 2026.</span></p>
       </div>
 
       <div class="service-card">
-        <div class="service-icon">🔬</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 3C16 3 6 12 6 19A10 10 0 0 0 26 19C26 12 16 3 16 3Z"/>
+            <path d="M11 19A5 5 0 0 0 16 24"/>
+          </svg>
+        </div>
         <h3><span class="lang-ar">علاج أمراض القرنية</span><span class="lang-en">Corneal Disease Treatment</span></h3>
         <p><span class="lang-ar">علاج القرنية المخروطية وزراعة القرنيات بأحدث الأساليب الجراحية.</span><span class="lang-en">Treatment of keratoconus and corneal transplants using the latest surgical techniques.</span></p>
       </div>
 
       <div class="service-card">
-        <div class="service-icon">💎</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 4L26 11V21L16 28L6 21V11L16 4Z"/>
+            <circle cx="16" cy="16" r="4"/>
+          </svg>
+        </div>
         <h3><span class="lang-ar">علاج الساد وزراعة العدسات الذكية</span><span class="lang-en">Cataract &amp; Smart Lens Implants</span></h3>
         <p><span class="lang-ar">إزالة الساد (المياه البيضاء) وزراعة أحدث أنواع العدسات الذكية متعددة البؤر.</span><span class="lang-en">Cataract removal and implantation of the latest premium multifocal and smart intraocular lenses.</span></p>
       </div>
 
       <div class="service-card">
-        <div class="service-icon">🌐</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="12"/>
+            <circle cx="16" cy="16" r="3.5"/>
+            <path d="M16 4V8M16 24V28M4 16H8M24 16H28"/>
+          </svg>
+        </div>
         <h3><span class="lang-ar">انفصال الشبكية</span><span class="lang-en">Retinal Detachment Treatment</span></h3>
         <p><span class="lang-ar">تشخيص وعلاج انفصال الشبكية بأحدث التقنيات الجراحية لحفظ البصر.</span><span class="lang-en">Diagnosis and surgical treatment of retinal detachment using advanced techniques to preserve vision.</span></p>
       </div>
 
       <div class="service-card">
-        <div class="service-icon">👶</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="11" r="6"/>
+            <path d="M13 10.5H13.01M19 10.5H19.01M13.5 14C14.5 15 17.5 15 18.5 14"/>
+            <path d="M6 28C6 22.5 10.5 19 16 19C21.5 19 26 22.5 26 28"/>
+          </svg>
+        </div>
         <h3><span class="lang-ar">عيون الأطفال والحول</span><span class="lang-en">Pediatric Eye Care &amp; Strabismus</span></h3>
         <p><span class="lang-ar">فحص عيون الأطفال وتشخيص وعلاج الحول (الإنحراف) بالطرق الجراحية وغير الجراحية.</span><span class="lang-en">Children's eye exams and comprehensive diagnosis and treatment of strabismus (squint) using surgical and non-surgical methods.</span></p>
       </div>
@@ -411,7 +450,7 @@
           <span class="lang-en">"Amazing center and the entire team is wonderful — their kindness and professionalism are unmatched. Very happy I had my surgery here. Wishing them all the best and continued success."</span>
         </div>
         <div class="t-reviewer">
-          <div class="t-avatar">👤</div>
+          <div class="t-avatar">MB</div>
           <div>
             <span class="t-name">M. B.</span>
             <span class="t-service lang-ar">⭐ Google Maps — منذ شهرين</span>
@@ -428,7 +467,7 @@
           <span class="lang-en">"MashaAllah, excellent center in terms of cleanliness, care and reception from start to finish. Their approach is medical, not just commercial. All respect and thanks."</span>
         </div>
         <div class="t-reviewer">
-          <div class="t-avatar">👤</div>
+          <div class="t-avatar">SA</div>
           <div>
             <span class="t-name">S. A.</span>
             <span class="t-service lang-ar">⭐ Google Maps — منذ شهر</span>
@@ -445,7 +484,7 @@
           <span class="lang-en">"I brought my 5-year-old daughter, worried they wouldn't know how to handle her. I was amazed by the professionalism — from the wonderful reception ladies to specialist Alaa who examined my daughter with great patience. Alaa was so kind and gently convinced her to complete the exam. Highly recommend, especially for children."</span>
         </div>
         <div class="t-reviewer">
-          <div class="t-avatar">👶</div>
+          <div class="t-avatar">SA</div>
           <div>
             <span class="t-name">S. A.</span>
             <span class="t-service lang-ar">⭐ Google Maps — منذ أسبوعين</span>
@@ -793,8 +832,8 @@
   </div>
 
   <div class="footer-bottom">
-    <div class="lang-ar">© 2025 مركز عيون العرب لطب وجراحة العيون — جميع الحقوق محفوظة.</div>
-    <div class="lang-en">© 2025 Arab Eyes Center for Ophthalmology — All rights reserved.</div>
+    <div class="lang-ar">© 2026 مركز عيون العرب لطب وجراحة العيون — جميع الحقوق محفوظة.</div>
+    <div class="lang-en">© 2026 Arab Eyes Center for Ophthalmology — All rights reserved.</div>
   </div>
 </footer>
 
@@ -807,3 +846,4 @@
 <script src="js/main.js"></script>
 </body>
 </html>
+
