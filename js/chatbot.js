@@ -1,262 +1,251 @@
-/* Arab Eyes Center – AI Chatbot Widget
-   Agent: DigitalOcean GenAI (eyes-agent)
-   ================================================ */
+/* Arab Eyes Center – AI Chatbot Widget */
 (function () {
   'use strict';
 
-  /* ─── Config ──────────────────────────────────────────── */
   var ENDPOINT = 'https://ohklhox7jkpmzxqa5wiymg5k.agents.do-ai.run/api/v1/chat/completions';
   var API_KEY  = 'O2rftCnU5R5fk8C_DLbYpJqKxPT7QSOD';
 
-  /* ─── State ───────────────────────────────────────────── */
   var history   = [];
   var streaming = false;
-  var opened    = false;
+  var welcomed  = false;
 
-  /* ─── Helpers ─────────────────────────────────────────── */
-  function lang()       { return document.documentElement.getAttribute('lang') || 'ar'; }
-  function t(ar, en)    { return lang() === 'ar' ? ar : en; }
-  function isRtl()      { return document.documentElement.getAttribute('dir') !== 'ltr'; }
+  function getLang() { return document.documentElement.getAttribute('lang') || 'ar'; }
+  function t(ar, en) { return getLang() === 'ar' ? ar : en; }
+  function isRtl()   { return document.documentElement.getAttribute('dir') !== 'ltr'; }
 
-  /* ─── DOM refs ────────────────────────────────────────── */
-  var panel, msgArea, input, sendBtn, fab;
+  var panel, msgArea, inputEl, sendBtn, fabBtn;
 
-  /* ─── Eye SVG (small, for bot avatar) ────────────────── */
-  var EYE_SVG =
-    '<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+  var EYE_AVATAR =
+    '<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">' +
     '<ellipse cx="10" cy="10" rx="8" ry="5.2" stroke="white" stroke-width="1.6"/>' +
     '<circle cx="10" cy="10" r="2.6" fill="white"/>' +
     '<circle cx="10" cy="10" r="1.15" fill="#125352"/>' +
     '</svg>';
 
-  /* ─── Inject panel HTML ───────────────────────────────── */
-  function injectPanel() {
-    var el = document.createElement('div');
-    el.id = 'ai-panel';
-    el.className = 'ai-panel';
-    el.setAttribute('role', 'dialog');
-    el.setAttribute('aria-modal', 'true');
-    el.setAttribute('aria-label', t('مساعد عيون العرب', 'Arab Eyes Assistant'));
-    el.setAttribute('hidden', '');
+  /* ── Build panel ─────────────────────────────────────── */
+  function buildPanel() {
+    panel = document.createElement('div');
+    panel.id        = 'ai-panel';
+    panel.className = 'ai-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
 
-    el.innerHTML =
-      '<div class="ai-panel-header">' +
-        '<div class="ai-panel-brand">' +
-          '<div class="ai-panel-avatar">' +
-            '<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-            '<ellipse cx="14" cy="14" rx="11" ry="7.5" stroke="white" stroke-width="2"/>' +
-            '<circle cx="14" cy="14" r="3.8" fill="white"/>' +
-            '<circle cx="14" cy="14" r="1.7" fill="#125352"/>' +
-            '<path d="M20 7l1.5-1.5M8 7L6.5 5.5M20 21l1.5 1.5M8 21l-1.5 1.5" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>' +
-            '</svg>' +
+    /* Header */
+    var header = document.createElement('div');
+    header.className = 'ai-panel-header';
+    header.innerHTML =
+      '<div class="ai-panel-brand">' +
+        '<div class="ai-panel-avatar">' +
+          '<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<ellipse cx="14" cy="14" rx="11" ry="7.5" stroke="white" stroke-width="2"/>' +
+          '<circle cx="14" cy="14" r="3.8" fill="white"/>' +
+          '<circle cx="14" cy="14" r="1.7" fill="#125352"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="ai-panel-info">' +
+          '<div class="ai-panel-name">' +
+            '<span class="acl-ar">مساعد عيون العرب</span>' +
+            '<span class="acl-en">Arab Eyes Assistant</span>' +
           '</div>' +
-          '<div class="ai-panel-info">' +
-            '<div class="ai-panel-name">' +
-              '<span class="acp-ar">مساعد عيون العرب</span>' +
-              '<span class="acp-en">Arab Eyes Assistant</span>' +
-            '</div>' +
-            '<div class="ai-panel-status">' +
-              '<span class="ai-status-dot"></span>' +
-              '<span class="acp-ar">ذكاء اصطناعي • متاح الآن</span>' +
-              '<span class="acp-en">AI Powered • Online</span>' +
-            '</div>' +
+          '<div class="ai-panel-status">' +
+            '<span class="ai-status-dot"></span>' +
+            '<span class="acl-ar">ذكاء اصطناعي • متاح الآن</span>' +
+            '<span class="acl-en">AI Powered • Online</span>' +
           '</div>' +
         '</div>' +
-        '<button class="ai-panel-close" id="ai-panel-close" aria-label="' + t('إغلاق', 'Close') + '">' +
-          '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M15 5L5 15M5 5l10 10" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>' +
-        '</button>' +
       '</div>' +
+      '<button class="ai-panel-close" id="ai-close-btn" aria-label="Close">' +
+        '<svg viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>' +
+      '</button>';
 
-      '<div class="ai-messages" id="ai-messages"></div>' +
+    /* Messages */
+    msgArea = document.createElement('div');
+    msgArea.id        = 'ai-messages';
+    msgArea.className = 'ai-messages';
 
-      '<div class="ai-input-bar">' +
-        '<input class="ai-input" id="ai-input" type="text" autocomplete="off" ' +
-          'placeholder="' + t('اكتب سؤالك هنا...', 'Type your question...') + '" ' +
-          'placeholder-ar="اكتب سؤالك هنا..." placeholder-en="Type your question..." />' +
-        '<button class="ai-send" id="ai-send" aria-label="' + t('إرسال', 'Send') + '">' +
-          '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
-          '<path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>' +
-          '</svg>' +
-        '</button>' +
-      '</div>';
+    /* Input bar */
+    var bar = document.createElement('div');
+    bar.className = 'ai-input-bar';
 
-    document.body.appendChild(el);
-    panel   = el;
-    msgArea = document.getElementById('ai-messages');
-    input   = document.getElementById('ai-input');
-    sendBtn = document.getElementById('ai-send');
+    inputEl = document.createElement('input');
+    inputEl.type          = 'text';
+    inputEl.className     = 'ai-input';
+    inputEl.autocomplete  = 'off';
+    inputEl.placeholder   = t('اكتب سؤالك هنا...', 'Type your question...');
 
-    document.getElementById('ai-panel-close').addEventListener('click', closePanel);
-    sendBtn.addEventListener('click', send);
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    sendBtn = document.createElement('button');
+    sendBtn.className  = 'ai-send';
+    sendBtn.setAttribute('aria-label', 'Send');
+    sendBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none">' +
+      '<path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg>';
+
+    bar.appendChild(inputEl);
+    bar.appendChild(sendBtn);
+
+    panel.appendChild(header);
+    panel.appendChild(msgArea);
+    panel.appendChild(bar);
+    document.body.appendChild(panel);
+
+    /* Listeners */
+    document.getElementById('ai-close-btn').addEventListener('click', closePanel);
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
 
-    /* close on backdrop click */
-    document.addEventListener('click', function (e) {
-      if (!panel.hidden && !panel.contains(e.target) && e.target !== fab && !fab.contains(e.target)) {
-        closePanel();
-      }
-    });
+    /* Language watcher */
+    new MutationObserver(syncLang).observe(
+      document.documentElement,
+      { attributes: true, attributeFilter: ['lang', 'dir'] }
+    );
 
-    /* re-apply lang on HTML attr change */
-    var mo = new MutationObserver(applyLang);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
-  }
-
-  /* ─── Wire FAB button ─────────────────────────────────── */
-  function wireFab() {
-    fab = document.getElementById('ai-fab');
-    if (fab) fab.addEventListener('click', togglePanel);
-  }
-
-  /* ─── Language ────────────────────────────────────────── */
-  function applyLang() {
-    var l = lang();
-    panel.querySelectorAll('.acp-ar').forEach(function (el) { el.style.display = l === 'ar' ? '' : 'none'; });
-    panel.querySelectorAll('.acp-en').forEach(function (el) { el.style.display = l === 'en' ? '' : 'none'; });
-    input.placeholder = l === 'ar' ? 'اكتب سؤالك هنا...' : 'Type your question...';
-    panel.setAttribute('aria-label', t('مساعد عيون العرب', 'Arab Eyes Assistant'));
+    syncLang();
     positionPanel();
   }
 
-  /* ─── Panel position (RTL/LTR) ───────────────────────── */
-  function positionPanel() {
-    var rtl = isRtl();
-    panel.style.left  = rtl ? '1.5rem' : 'auto';
-    panel.style.right = rtl ? 'auto'   : '1.5rem';
+  /* ── Language sync ───────────────────────────────────── */
+  function syncLang() {
+    var l = getLang();
+    panel.querySelectorAll('.acl-ar').forEach(function (el) { el.style.display = l === 'ar' ? '' : 'none'; });
+    panel.querySelectorAll('.acl-en').forEach(function (el) { el.style.display = l === 'en' ? '' : 'none'; });
+    inputEl.placeholder = l === 'ar' ? 'اكتب سؤالك هنا...' : 'Type your question...';
+    positionPanel();
   }
 
-  /* ─── Open / close ────────────────────────────────────── */
+  /* ── Position (RTL / LTR) ────────────────────────────── */
+  function positionPanel() {
+    if (isRtl()) { panel.style.left = '1.5rem'; panel.style.right = 'auto'; }
+    else          { panel.style.right = '1.5rem'; panel.style.left = 'auto'; }
+  }
+
+  /* ── Open / close ────────────────────────────────────── */
   function openPanel() {
-    applyLang();
-    panel.removeAttribute('hidden');
-    requestAnimationFrame(function () { panel.classList.add('ai-panel--open'); });
-    if (!opened) { addWelcome(); opened = true; }
+    positionPanel();
+    panel.classList.add('ai-panel--open');
+    fabBtn.classList.add('ai-fab--active');
+    if (!welcomed) { addWelcome(); welcomed = true; }
     scrollBottom();
-    setTimeout(function () { input.focus(); }, 320);
-    if (fab) fab.classList.add('ai-fab--active');
+    setTimeout(function () { inputEl.focus(); }, 50);
   }
 
   function closePanel() {
     panel.classList.remove('ai-panel--open');
-    if (fab) fab.classList.remove('ai-fab--active');
-    setTimeout(function () { panel.setAttribute('hidden', ''); }, 310);
+    fabBtn.classList.remove('ai-fab--active');
   }
 
   function togglePanel() {
-    if (panel.hasAttribute('hidden') || !panel.classList.contains('ai-panel--open')) openPanel();
-    else closePanel();
+    if (panel.classList.contains('ai-panel--open')) closePanel();
+    else openPanel();
   }
 
-  /* ─── Welcome message ─────────────────────────────────── */
+  /* ── Welcome ─────────────────────────────────────────── */
   function addWelcome() {
-    var ar = 'مرحباً! 👋\nأنا المساعد الذكي لمركز عيون العرب. كيف أقدر أساعدك اليوم؟\n\nيمكنك سؤالي عن:\n• خدماتنا الطبية (ليزر، قرنية، ساد، شبكية…)\n• مواعيد الدوام\n• الأطباء المتخصصين\n• طريقة حجز موعد';
-    var en = 'Hello! 👋\nI\'m the AI assistant for Arab Eyes Center. How can I help you today?\n\nYou can ask me about:\n• Our medical services (laser, cornea, cataract, retina…)\n• Working hours\n• Our specialist doctors\n• How to book an appointment';
-    appendBotBubble(t(ar, en));
+    var ar = 'مرحباً! 👋\nأنا المساعد الذكي لمركز عيون العرب.\nكيف أقدر أساعدك اليوم؟\n\n• خدماتنا الطبية (ليزر، قرنية، ساد، شبكية)\n• مواعيد الدوام والحجوزات\n• الأطباء المتخصصين';
+    var en = 'Hello! 👋\nI\'m the AI assistant for Arab Eyes Center.\nHow can I help you today?\n\n• Medical services (laser, cornea, cataract, retina)\n• Working hours & appointments\n• Our specialist doctors';
+    addBotBubble(t(ar, en));
   }
 
-  /* ─── Bubble builders ─────────────────────────────────── */
-  function appendBotBubble(text) {
-    var wrap = document.createElement('div');
-    wrap.className = 'ai-msg ai-msg--bot';
+  /* ── Message builders ────────────────────────────────── */
+  function addBotBubble(text) {
+    var row    = document.createElement('div');
+    row.className = 'ai-msg ai-msg--bot';
 
     var avatar = document.createElement('div');
-    avatar.className = 'ai-bot-avatar';
-    avatar.innerHTML = EYE_SVG;
+    avatar.className  = 'ai-bot-avatar';
+    avatar.innerHTML  = EYE_AVATAR;
 
     var bubble = document.createElement('div');
     bubble.className = 'ai-bubble';
-    setFormattedText(bubble, text);
+    renderText(bubble, text);
 
-    wrap.appendChild(avatar);
-    wrap.appendChild(bubble);
-    msgArea.appendChild(wrap);
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    msgArea.appendChild(row);
     scrollBottom();
     return bubble;
   }
 
-  function appendUserBubble(text) {
-    var wrap = document.createElement('div');
-    wrap.className = 'ai-msg ai-msg--user';
+  function addUserBubble(text) {
+    var row    = document.createElement('div');
+    row.className = 'ai-msg ai-msg--user';
 
     var bubble = document.createElement('div');
-    bubble.className = 'ai-bubble';
+    bubble.className  = 'ai-bubble';
     bubble.textContent = text;
 
-    wrap.appendChild(bubble);
-    msgArea.appendChild(wrap);
+    row.appendChild(bubble);
+    msgArea.appendChild(row);
     scrollBottom();
   }
 
-  function showTyping() {
-    var wrap = document.createElement('div');
-    wrap.className = 'ai-msg ai-msg--bot';
-    wrap.id = 'ai-typing';
+  function addTypingIndicator() {
+    var row    = document.createElement('div');
+    row.id        = 'ai-typing';
+    row.className = 'ai-msg ai-msg--bot';
 
     var avatar = document.createElement('div');
     avatar.className = 'ai-bot-avatar';
-    avatar.innerHTML = EYE_SVG;
+    avatar.innerHTML = EYE_AVATAR;
 
     var bubble = document.createElement('div');
     bubble.className = 'ai-bubble ai-typing-dots';
     bubble.innerHTML = '<span></span><span></span><span></span>';
 
-    wrap.appendChild(avatar);
-    wrap.appendChild(bubble);
-    msgArea.appendChild(wrap);
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    msgArea.appendChild(row);
     scrollBottom();
   }
 
-  function hideTyping() {
+  function removeTypingIndicator() {
     var el = document.getElementById('ai-typing');
-    if (el) el.remove();
+    if (el) el.parentNode.removeChild(el);
   }
 
-  function setFormattedText(el, text) {
+  function renderText(el, text) {
     el.innerHTML = '';
-    text.split('\n').forEach(function (line, i) {
+    var lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
       if (i > 0) el.appendChild(document.createElement('br'));
-      el.appendChild(document.createTextNode(line));
-    });
+      el.appendChild(document.createTextNode(lines[i]));
+    }
   }
 
   function scrollBottom() {
     msgArea.scrollTop = msgArea.scrollHeight;
   }
 
-  /* ─── Send ────────────────────────────────────────────── */
-  function send() {
+  /* ── Send ────────────────────────────────────────────── */
+  function sendMessage() {
     if (streaming) return;
-    var text = input.value.trim();
+    var text = inputEl.value.trim();
     if (!text) return;
-
-    input.value = '';
-    appendUserBubble(text);
+    inputEl.value = '';
+    addUserBubble(text);
     history.push({ role: 'user', content: text });
     callAgent();
   }
 
-  /* ─── Stream from DO AI agent ─────────────────────────── */
+  /* ── API streaming ───────────────────────────────────── */
   function callAgent() {
-    streaming = true;
+    streaming        = true;
     sendBtn.disabled = true;
-    input.disabled   = true;
-    showTyping();
+    inputEl.disabled = true;
+    addTypingIndicator();
 
     fetch(ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + API_KEY
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + API_KEY },
       body: JSON.stringify({ messages: history, stream: true })
     })
     .then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
+      removeTypingIndicator();
 
-      hideTyping();
-      var botBubble = appendBotBubble('');
+      var botBubble = addBotBubble('');
       var fullText  = '';
       var buf       = '';
       var decoder   = new TextDecoder();
@@ -269,38 +258,30 @@
             finish();
             return;
           }
-
           buf += decoder.decode(chunk.value, { stream: true });
           var lines = buf.split('\n');
           buf = lines.pop();
-
-          lines.forEach(function (raw) {
-            var line = raw.trim();
-            if (!line.startsWith('data:')) return;
-            var payload = line.slice(5).trim();
-            if (payload === '[DONE]') return;
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line.startsWith('data:')) continue;
+            var raw = line.slice(5).trim();
+            if (raw === '[DONE]') continue;
             try {
-              var j     = JSON.parse(payload);
-              var delta = ((j.choices || [])[0] || {});
+              var json  = JSON.parse(raw);
+              var delta = ((json.choices || [])[0] || {});
               var piece = (delta.delta || delta.message || {}).content || '';
-              if (piece) {
-                fullText += piece;
-                setFormattedText(botBubble, fullText);
-                scrollBottom();
-              }
-            } catch (_) { /* partial chunk — wait for next */ }
-          });
-
+              if (piece) { fullText += piece; renderText(botBubble, fullText); scrollBottom(); }
+            } catch (_) {}
+          }
           return pump();
         });
       }
-
       return pump();
     })
     .catch(function (err) {
-      hideTyping();
-      appendBotBubble(t(
-        'عذرًا، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى أو التواصل معنا على 06 505 0660.',
+      removeTypingIndicator();
+      addBotBubble(t(
+        'عذرًا، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى أو الاتصال بنا على 06 505 0660.',
         'Sorry, a connection error occurred. Please try again or call us at 06 505 0660.'
       ));
       console.error('[AEC Chatbot]', err);
@@ -311,16 +292,31 @@
   function finish() {
     streaming        = false;
     sendBtn.disabled = false;
-    input.disabled   = false;
-    input.focus();
+    inputEl.disabled = false;
+    inputEl.focus();
     scrollBottom();
   }
 
-  /* ─── Boot ────────────────────────────────────────────── */
+  /* ── Boot ────────────────────────────────────────────── */
   function init() {
-    injectPanel();
-    wireFab();
-    applyLang();
+    buildPanel();
+    fabBtn = document.getElementById('ai-fab');
+    if (fabBtn) {
+      fabBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        togglePanel();
+      });
+    }
+    /* Close on outside click */
+    document.addEventListener('click', function (e) {
+      if (
+        panel.classList.contains('ai-panel--open') &&
+        !panel.contains(e.target) &&
+        fabBtn && !fabBtn.contains(e.target)
+      ) {
+        closePanel();
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

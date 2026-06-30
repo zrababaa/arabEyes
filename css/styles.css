@@ -1891,14 +1891,23 @@ html[dir="ltr"] .hero-float-spec { right: 12%; }
   flex-direction: column;
   overflow: hidden;
   z-index: 9990;
-  opacity: 0;
-  transform: translateY(18px) scale(.97);
-  transition: opacity .3s ease, transform .3s ease;
   border: 1px solid rgba(18,83,82,.12);
+  /* hidden by default — use visibility so CSS transitions work */
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(16px) scale(.97);
+  transition: opacity .28s ease, transform .28s ease, visibility 0s linear .28s;
 }
 html[dir="rtl"] .ai-panel { left: 1.5rem; }
 html[dir="ltr"]  .ai-panel { right: 1.5rem; }
-.ai-panel--open { opacity: 1; transform: translateY(0) scale(1); }
+.ai-panel--open {
+  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity .28s ease, transform .28s ease, visibility 0s linear 0s;
+}
 
 /* Header */
 .ai-panel-header {
