@@ -1076,19 +1076,21 @@ html[dir="ltr"] .f-links a:hover  { padding-left:  4px; }
 html[dir="rtl"] .floating-wrap { left:  1.5rem; }
 html[dir="ltr"]  .floating-wrap { right: 1.5rem; }
 
-.float-wa {
+.ai-fab {
   width: 54px; height: 54px;
-  background: #25D366;
+  background: var(--teal);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: var(--white);
-  box-shadow: 0 4px 18px rgba(37,211,102,.45);
+  box-shadow: 0 4px 18px rgba(18,83,82,.45);
   transition: var(--transition);
+  border: none; cursor: pointer;
+  position: relative;
 }
-.float-wa:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(37,211,102,.55); }
+.ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(18,83,82,.6); }
+.ai-fab--active { background: var(--charcoal); }
+.ai-fab svg { width: 26px; height: 26px; }
 
 .float-book {
   background: var(--gold);
@@ -1284,20 +1286,22 @@ html[dir="ltr"]  .scroll-top { right: 1.5rem; }
 .scta-wa:hover { background: #1da851; }
 
 /* ================================================
-   WHATSAPP PULSE RING
+   AI FAB PULSE RING
    ================================================ */
-@keyframes wa-ring {
-  0%   { transform: scale(1); opacity: .6; }
+@keyframes ai-ring {
+  0%   { transform: scale(1); opacity: .55; }
   100% { transform: scale(2.5); opacity: 0; }
 }
-.float-wa { position: relative; }
-.float-wa::before,
-.float-wa::after {
+.ai-fab::before,
+.ai-fab::after {
   content: ''; position: absolute; inset: 0;
-  border-radius: 50%; background: #25D366;
-  animation: wa-ring 2.5s ease-out infinite; z-index: -1;
+  border-radius: 50%; background: var(--teal);
+  animation: ai-ring 2.6s ease-out infinite; z-index: -1;
+  pointer-events: none;
 }
-.float-wa::after { animation-delay: 1.25s; }
+.ai-fab::after { animation-delay: 1.3s; }
+.ai-fab--active::before,
+.ai-fab--active::after { display: none; }
 
 /* ================================================
    STATS COUNTER STRIP
@@ -1871,8 +1875,192 @@ html[dir="ltr"] .hero-float-spec { right: 12%; }
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); }
 .reveal.in { opacity: 1; transform: none; }
 
-/* ════════════════ FLOATING WHATSAPP REFINEMENT ════════════════ */
-.float-wa { background: #25D366; box-shadow: 0 8px 24px rgba(37,211,102,.5); }
+/* ════════════════ AI FAB REFINEMENT ════════════════ */
+.ai-fab { background: var(--teal); box-shadow: 0 8px 24px rgba(18,83,82,.45); }
+
+/* ════════════════ AI CHAT PANEL ════════════════ */
+.ai-panel {
+  position: fixed;
+  bottom: 8.5rem;
+  width: min(380px, calc(100vw - 3rem));
+  max-height: min(540px, calc(100vh - 130px));
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(18,83,82,.22), 0 4px 16px rgba(28,28,20,.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9990;
+  opacity: 0;
+  transform: translateY(18px) scale(.97);
+  transition: opacity .3s ease, transform .3s ease;
+  border: 1px solid rgba(18,83,82,.12);
+}
+html[dir="rtl"] .ai-panel { left: 1.5rem; }
+html[dir="ltr"]  .ai-panel { right: 1.5rem; }
+.ai-panel--open { opacity: 1; transform: translateY(0) scale(1); }
+
+/* Header */
+.ai-panel-header {
+  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+  padding: .9rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.ai-panel-brand { display: flex; align-items: center; gap: .75rem; }
+.ai-panel-avatar {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ai-panel-avatar svg { width: 26px; height: 26px; }
+.ai-panel-info { display: flex; flex-direction: column; gap: .15rem; }
+.ai-panel-name { font-size: .9rem; font-weight: 700; color: white; line-height: 1.2; }
+.ai-panel-status {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .72rem; color: rgba(255,255,255,.82); font-weight: 500;
+}
+.ai-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 5px rgba(74,222,128,.8);
+  flex-shrink: 0;
+}
+.ai-panel-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.ai-panel-close:hover { background: rgba(255,255,255,.28); }
+.ai-panel-close svg { width: 16px; height: 16px; }
+
+/* Messages area */
+.ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+  background: var(--ivory);
+  scroll-behavior: smooth;
+}
+.ai-messages::-webkit-scrollbar { width: 4px; }
+.ai-messages::-webkit-scrollbar-track { background: transparent; }
+.ai-messages::-webkit-scrollbar-thumb { background: var(--beige); border-radius: 4px; }
+
+/* Message rows */
+.ai-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: .5rem;
+  max-width: 100%;
+}
+.ai-msg--bot { align-self: flex-start; }
+.ai-msg--user { align-self: flex-end; flex-direction: row-reverse; }
+
+/* Bot avatar */
+.ai-bot-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ai-bot-avatar svg { width: 18px; height: 18px; }
+
+/* Bubbles */
+.ai-bubble {
+  padding: .62rem .9rem;
+  border-radius: var(--radius-md);
+  font-size: .84rem;
+  line-height: 1.65;
+  max-width: calc(100% - 44px);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.ai-msg--bot  .ai-bubble {
+  background: var(--white);
+  color: var(--charcoal);
+  border: 1px solid var(--beige);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+html[dir="ltr"] .ai-msg--bot .ai-bubble { border-bottom-left-radius: 4px; border-bottom-right-radius: var(--radius-md); }
+.ai-msg--user .ai-bubble {
+  background: var(--teal);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+html[dir="ltr"] .ai-msg--user .ai-bubble { border-bottom-right-radius: 4px; border-bottom-left-radius: var(--radius-md); }
+
+/* Typing dots */
+.ai-typing-dots {
+  display: flex; align-items: center; gap: .3rem;
+  padding: .7rem .9rem; min-width: 52px;
+}
+.ai-typing-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--teal); opacity: .5;
+  animation: ai-dot-bounce .9s ease-in-out infinite;
+}
+.ai-typing-dots span:nth-child(2) { animation-delay: .17s; }
+.ai-typing-dots span:nth-child(3) { animation-delay: .34s; }
+@keyframes ai-dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: .5; }
+  40%            { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Input bar */
+.ai-input-bar {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .7rem .85rem;
+  border-top: 1px solid var(--beige);
+  background: var(--white);
+  flex-shrink: 0;
+}
+.ai-input {
+  flex: 1;
+  border: 1.5px solid var(--beige);
+  border-radius: 24px;
+  padding: .52rem .95rem;
+  font-size: .84rem;
+  font-family: inherit;
+  background: var(--ivory);
+  color: var(--charcoal);
+  outline: none;
+  transition: border-color .2s;
+}
+.ai-input:focus { border-color: var(--teal); background: var(--white); }
+.ai-send {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--teal);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background .2s, transform .15s;
+}
+.ai-send:hover  { background: var(--teal-light); transform: scale(1.08); }
+.ai-send:disabled { background: var(--beige); cursor: not-allowed; transform: none; }
+.ai-send svg { width: 16px; height: 16px; }
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .ai-panel {
+    width: calc(100vw - 2rem);
+    bottom: 7.5rem;
+    max-height: calc(100vh - 120px);
+  }
+  html[dir="rtl"] .ai-panel { left: 1rem; }
+  html[dir="ltr"]  .ai-panel { right: 1rem; }
+}
 
 /* ════════════════ SECTION TAG GRADIENT ════════════════ */
 .section-tag {
